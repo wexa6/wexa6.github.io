@@ -18,7 +18,7 @@ image: /assets/img/zeus/zeus-trojan-cover.png
 
 > Its creator is believed to be ***Evgeniy Mikhailovich Bogachev***, a Russian hacker, who remains one of the FBI's most wanted cybercriminals with a $3 million bounty on his head.
 
-![](/assets/img/Evgeniy Mikhailovich Bogachev.jpeg)
+![](/assets/img/zeus/Evgeniy Mikhailovich Bogachev.jpeg)
 *Evgeniy Mikhailovich Bogachev*
 
 > Zeus was responsible for infecting millions of systems worldwide, causing significant financial losses to individuals and organizations.
@@ -339,15 +339,15 @@ To isolate the relevant events from the extensive data captured by Procmon, spec
 ##### Dropped Files
 
 After filtering the Procmon logs, the first notable action was the malware creating a file named `msimg32.dll` in the `\AppData\Local\Temp` folder.
-![](/assets/img/18.jpeg)
+![](/assets/img/zeus/18.jpeg)
 *msimg32.dll*
 
 A quick search confirms that `msimg32.dll` is a normal Windows file, but it is supposed to be located in `C:\Windows\System32`, not in a temporary folder.
-![](/assets/img/19.jpg)
+![](/assets/img/zeus/19.jpg)
 *Searching the Dll in Google*
 
 The msimg32.dll and InstallFlashPlayer.exe that were created in the `Temp` folder were initially hidden. Standard commands and the File Explorer could not see it.
-![](/assets/img/20.jpg)
+![](/assets/img/zeus/20.jpg)
 *msimg32.dll & InstallFlashPlayer.exe are hidden*
 
 This is because the malware flagged them as a "Hidden protected operating system" files. This is a common trick to keep its components from being easily discovered.
@@ -355,12 +355,12 @@ This is because the malware flagged them as a "Hidden protected operating system
 To be able to see them I had to disable *Hide protected operating system files* in 
 
 `Control panel > Appearance and Personalization > File Explorer Options`
-![](/assets/img/21.jpg)
+![](/assets/img/zeus/21.jpg)
 *File explorer options*
 
 After revealing the hidden files, hashes were calculated for both `InstallFlashPlayer.exe` and `msimg32.dll` and submitted to [VirusTotal](https://www.virustotal.com/gui/) for reputation analysis. The results were highly indicative of a specific evasion technique:
 
-![](/assets/img/23.jpg){:width="750px"} | ![](/assets/img/24.jpg){:width="750px"} 
+![](/assets/img/zeus/23.jpg){:width="750px"} | ![](/assets/img/zeus/24.jpg){:width="750px"} 
 
 In this technique, a legitimate, benign executable is used as a loader. When executed, it loads a malicious DLL that has been placed in the same directory and given a name that the application is expected to load (in this case, `msimg32.dll`).
 
@@ -371,11 +371,11 @@ Returning to Process Monitor, the analysis focused on file creation events by fi
 A file was created at:
 
 `C:\Users\wexa\AppData\Local\Google\Desktop\Install\{7af4fd0b-ff88-5ccf-b2b9-96b51cb05e63}\❤≸⋙\Ⱒ☠⍨\ﯹ๛\{7af4fd0b-ff88-5ccf-b2b9-96b51cb05e63}\` with the conspicuous name `exe.etadpUelgooG`.
-![](/assets/img/25.jpg)
+![](/assets/img/zeus/25.jpg)
 *Strange folder name*
 
 Navigating to it's directory I found others dropped files by the malware which can be used for persistence
-![](/assets/img/26.jpg)
+![](/assets/img/zeus/26.jpg)
 *4 dropped files by the malware in strange directory*
 
 Checking the `GoogleUpdate.exe` hash, it seems that it has the same SHA256 hash as the malware executable
@@ -383,7 +383,7 @@ Checking the `GoogleUpdate.exe` hash, it seems that it has the same SHA256 hash 
 -   Original Sample SHA256:  `69E966E730557FDE8FD84317CDEF1ECE00A8BB3470C0B58F3231E170168AF169`
 -   GoogleUpdate.exe SHA256: `69E966E730557FDE8FD84317CDEF1ECE00A8BB3470C0B58F3231E170168AF169`
 
-![](/assets/img/27.jpg)
+![](/assets/img/zeus/27.jpg)
 *Same hash as the malware sample*
 
 This confirms that `GoogleUpdate.exe` is a direct copy of the initial payload. The malware's primary persistence strategy is to copy itself to a new location and rename itself to masquerade as a legitimate process. This is a classic `Defense Evasion` and `Persistence` technique, corresponding to [MITRE ATT&CK T1036.005: Masquerading: Match Legitimate Name](https://attack.mitre.org/techniques/T1036/005/).
