@@ -6,8 +6,8 @@ tags: [zeus, zbot, trojan, malware analysis, dynamic analysis]
 image: /assets/img/zeus/zeus-trojan-cover.png  
 ---
 
+<h2 align="center"> بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h2>
 * * * * *
-
 ### Introduction.
 
 #### *Overview:*
